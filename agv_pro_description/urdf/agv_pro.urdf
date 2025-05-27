@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="AGV pro" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="base_footprint"/>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+    <origin xyz="0 0 0.010" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0431007708276438 1.98529026033929E-05 0.0656901341380885" rpy="0 0 0" />
+      <mass value="17.2325340030774" />
+      <inertia ixx="0.130530654388061" ixy="1.25356744591082E-05" ixz="0.00260872823952655"
+               iyy="0.234600827397763" iyz="-1.08543288319261E-05"
+               izz="0.320883175393455" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0"
+              rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/base_link.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0 0.686274509803922 0.384313725490196 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/base_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="right_rear_wheel_link">
+    <inertial>
+      <origin xyz="-4.1268E-08 -0.014058 4.809E-06" rpy="0 0 0" />
+      <mass value="0.21659" />
+      <inertia ixx="0.00045184" ixy="-2.3752E-07" ixz="-1.6377E-08"
+               iyy="0.0008608"  iyz="6.8934E-09"
+               izz="0.00045128" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0"
+              rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/right_rear_wheel.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.74118 0.90196 0.95686 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0"
+              rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/right_rear_wheel.stl" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="right_rear_wheel_joint" type="fixed">
+    <origin xyz="-0.1239 -0.142 0.052" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="right_rear_wheel_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  
+  <link name="right_front_wheel_link">
+    <inertial>
+      <origin xyz="2.24622794741574E-06 -0.0140582850581192 -4.25241401135618E-06" rpy="0 0 0" />
+      <mass value="0.21659122149244" />
+      <inertia ixx="0.000451733958911204" ixy="2.14133462162245E-07" ixz="2.19425044898881E-07"
+               iyy="0.000860800194632781" iyz="1.03009700284975E-07"
+               izz="0.000451383161284103" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/right_front_wheel.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/right_front_wheel.stl" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="right_front_wheel_joint" type="fixed">
+    <origin xyz="0.2191 -0.142 0.052"
+      rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="right_front_wheel_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  
+  <link name="left_front_wheel_link">
+    <inertial>
+      <origin xyz="-2.79514271568464E-06 0.0140582854597342 3.91212172640154E-06" rpy="0 0 0" />
+      <mass value="0.216591225420666" />
+      <inertia ixx="0.000451625300911203" ixy="-1.87998059108676E-07" ixz="2.71888627187796E-07"
+               iyy="0.000860792252472034" iyz="-1.45335918849847E-07"
+               izz="0.000451484014611363" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/left_front_wheel.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/left_front_wheel.stl" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="Left_front_wheel_joint" type="fixed">
+    <origin xyz="0.2191 0.142 0.052"
+      rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="left_front_wheel_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  
+  <link name="left_rear_wheel_link">
+    <inertial>
+      <origin xyz="6.86055793786E-07 0.0140582850580976 -4.76003074739717E-06" rpy="0 0 0" />
+      <mass value="0.21659122149267" />
+      <inertia ixx="0.000451821289106536" ixy="2.33751294354773E-07" ixz="9.94261647253684E-08"
+               iyy="0.000860800194633265" iyz="4.27138200112425E-08"
+               izz="0.000451295831089451" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/left_rear_wheel.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/left_rear_wheel.stl" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="left_rear_wheel_joint" type="fixed">
+    <origin xyz="-0.1239 0.142 0.052" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="left_rear_wheel_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  
+  <link name="base_scan">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0"
+               iyz="0"
+               izz="0" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/lidar.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://agv_pro_description/meshes/lidar.stl" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="lidar_joint" type="fixed">
+    <origin xyz="0.22254 0 0.2339"
+      rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_scan" />
+    <axis xyz="0 0 0" />
+  </joint>
+</robot>
