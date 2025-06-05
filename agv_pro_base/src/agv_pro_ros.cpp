@@ -1,5 +1,21 @@
 #include "agv_pro_base/agv_pro_driver.h"
 
+std::array<double, 36> odom_pose_covariance = {
+  {1e-9, 0, 0, 0, 0, 0,
+  0, 1e-3, 1e-9, 0, 0, 0,
+  0, 0, 1e6, 0, 0, 0,
+  0, 0, 0, 1e6, 0, 0,
+  0, 0, 0, 0, 1e6, 0,
+  0, 0, 0, 0, 0, 1e-9} };
+
+std::array<double, 36> odom_twist_covariance = {
+  {1e-9, 0, 0, 0, 0, 0,
+  0, 1e-3, 1e-9, 0, 0, 0,
+  0, 0, 1e6, 0, 0, 0,
+  0, 0, 0, 1e6, 0, 0,
+  0, 0, 0, 0, 1e6, 0,
+  0, 0, 0, 0, 0, 1e-9} };
+
 AGV_PRO::AGV_PRO(std::string node_name):rclcpp::Node(node_name)
 {
   this->declare_parameter<std::string>("port_name","/dev/ttyS0");
@@ -101,8 +117,8 @@ void AGV_PRO::cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
 
   try
   {
-    size_t bytes_transmit_size = port->send(data_vec);
-
+    port->send(data_vec);
+    // size_t bytes_transmit_size = port->send(data_vec);
     // std::stringstream ss;
     // for (auto b : data_vec) {
     //   ss << std::hex << std::uppercase << std::setfill('0') << std::setw(2)

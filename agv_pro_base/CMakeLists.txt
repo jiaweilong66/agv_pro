@@ -13,6 +13,7 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
@@ -20,7 +21,10 @@ find_package(nav_msgs REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(agv_pro_node src/agv_pro_node.cpp)
+add_executable(agv_pro_node 
+  src/agv_pro_node.cpp
+  src/agv_pro_ros.cpp
+)
 
 target_include_directories(agv_pro_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -32,7 +36,9 @@ ament_target_dependencies(agv_pro_node
   rclcpp
   tf2
   tf2_ros
+  tf2_geometry_msgs
   std_msgs
+  sensor_msgs
   geometry_msgs
   serial_driver
   nav_msgs

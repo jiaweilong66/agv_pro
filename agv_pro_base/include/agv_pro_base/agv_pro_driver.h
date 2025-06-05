@@ -11,26 +11,14 @@
 #include <sensor_msgs/msg/imu.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #define RECEIVE_DATA_SIZE 13         //The length of the data sent by the esp32
 #define SEND_DATA_SIZE    13         //The length of data sent by ROS to the esp32
 #define RETURN_COMMAND 0x25
 
-std::array<double, 36> odom_pose_covariance = {
-    {1e-9, 0, 0, 0, 0, 0,
-    0, 1e-3, 1e-9, 0, 0, 0,
-    0, 0, 1e6, 0, 0, 0,
-    0, 0, 0, 1e6, 0, 0,
-    0, 0, 0, 0, 1e6, 0,
-    0, 0, 0, 0, 0, 1e-9} };
-std::array<double, 36> odom_twist_covariance = {
-    {1e-9, 0, 0, 0, 0, 0,
-    0, 1e-3, 1e-9, 0, 0, 0,
-    0, 0, 1e6, 0, 0, 0,
-    0, 0, 0, 1e6, 0, 0,
-    0, 0, 0, 0, 1e6, 0,
-    0, 0, 0, 0, 0, 1e-9} };
+extern std::array<double, 36> odom_pose_covariance;
+extern std::array<double, 36> odom_twist_covariance;
 
 class AGV_PRO : public rclcpp::Node
 {
