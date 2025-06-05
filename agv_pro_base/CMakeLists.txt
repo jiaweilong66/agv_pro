@@ -11,6 +11,11 @@ find_package(rclcpp REQUIRED)
 find_package(serial_driver REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -25,9 +30,12 @@ target_compile_features(agv_pro_node PUBLIC c_std_99 cxx_std_17)  # Require C99 
 
 ament_target_dependencies(agv_pro_node
   rclcpp
+  tf2
+  tf2_ros
   std_msgs
   geometry_msgs
   serial_driver
+  nav_msgs
 )
 
 install(TARGETS agv_pro_node
