@@ -22,19 +22,7 @@ def generate_launch_description():
                                 parameters=[driver_dir],
                                 )
 
-
-    rviz_dir = os.path.join(get_package_share_directory('lslidar_driver'), 'rviz', 'lslidar.rviz')
-
-    rviz_node = Node(
-        package='rviz2',
-        namespace='',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', rviz_dir],
-        output='screen')
-
     return LaunchDescription([
-        driver_node,
-        rviz_node,
+        driver_node
     ])
 
