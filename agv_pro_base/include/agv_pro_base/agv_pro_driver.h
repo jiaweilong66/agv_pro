@@ -27,6 +27,7 @@ public:
   ~AGV_PRO();
 private:
   void Control();
+  void set_auto_report();
   bool readData();
   void publisherOdom(double dt);
   void publisherVoltage();

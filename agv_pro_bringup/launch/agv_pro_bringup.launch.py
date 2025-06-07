@@ -8,7 +8,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
 
-    port_name_arg = LaunchConfiguration('port_name',default='ttyS0')
+    port_name_arg = LaunchConfiguration('port_name',default='/dev/agvpro_controller')
     namespace = LaunchConfiguration('namespace', default='')
 
     urdf_file = os.path.join(
@@ -24,7 +24,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'port_name', 
             default_value=port_name_arg,
-            description='port name, e.g. ttyS0'),
+            description='port name, e.g. ttyACM0'),
 
         Node(
             package='agv_pro_base',
@@ -53,6 +53,6 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([os.path.join(
                 get_package_share_directory('lslidar_driver'),'launch'),
-                'lslidar_launch.py'])
+                '/lslidar_launch.py'])
         )
     ])

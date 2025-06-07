@@ -16,64 +16,6 @@ std::array<double, 36> odom_twist_covariance = {
   0, 0, 0, 0, 1e6, 0,
   0, 0, 0, 0, 0, 1e-9} };
 
-AGV_PRO::AGV_PRO(std::string node_name):rclcpp::Node(node_name)
-{
-  this->declare_parameter<std::string>("port_name","/dev/ttyS0");
-  this->declare_parameter<std::string>("odometry.frame_id", "odom");
-  this->declare_parameter<std::string>("odometry.child_frame_id", "base_footprint");
-  this->declare_parameter<std::string>("imu.frame_id", "imu_link");
-  this->declare_parameter<std::string>("namespace", "");
-
-  this->get_parameter_or<std::string>("port_name",device_name_,std::string(""));
-  this->get_parameter_or<std::string>("odometry.frame_id",frame_id_of_odometry_,std::string("odom"));
-  this->get_parameter_or<std::string>("odometry.child_frame_id",child_frame_id_of_odometry_,std::string("base_footprint"));
-  this->get_parameter_or<std::string>("imu.frame_id",frame_id_of_imu_,std::string("imu_link"));        
-  this->get_parameter_or<std::string>("namespace",name_space_,std::string(""));
-
-  if (name_space_ != "") {
-    frame_id_of_odometry_ = name_space_ + "/" + frame_id_of_odometry_;
-    child_frame_id_of_odometry_ = name_space_ + "/" + child_frame_id_of_odometry_;
-    frame_id_of_imu_ = name_space_ + "/" + frame_id_of_imu_;
-  }
-
-  odomBroadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(this);
-  pub_imu =  this->create_publisher<sensor_msgs::msg::Imu>("imu", 20);
-  pub_odom = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
-  pub_voltage = create_publisher<std_msgs::msg::Float32>("voltage", 10);
-  cmd_sub = this->create_subscription<geometry_msgs::msg::Twist>(
-    "/cmd_vel", 10, std::bind(&AGV_PRO::cmdCallback, this, std::placeholders::_1));
-      
-  drivers::serial_driver::SerialPortConfig config(
-    115200,
-    drivers::serial_driver::FlowControl::NONE,
-    drivers::serial_driver::Parity::NONE,
-    drivers::serial_driver::StopBits::ONE
-  );
-
-  try{
-    io_context_ = std::make_shared<drivers::common::IoContext>(1);
-    serial_driver_ = std::make_shared<drivers::serial_driver::SerialDriver>(*io_context_);
-    serial_driver_->init_port(device_name_, config);
-    serial_driver_->port()->open();
-    
-    RCLCPP_INFO(this->get_logger(), "Serial port initialized successfully");
-    RCLCPP_INFO(this->get_logger(), "Using device: %s", serial_driver_->port().get()->device_name().c_str());
-    RCLCPP_INFO(this->get_logger(), "Baud_rate: %d", config.get_baud_rate());
-  }
-  catch (const std::exception &ex){
-    RCLCPP_ERROR(this->get_logger(), "Failed to initialize serial port: %s", ex.what());
-    return;
-  }
-  
-  AGV_PRO::Control();//Loop through data collection and publish the topic
-
-}
-
-AGV_PRO::~AGV_PRO()
-{
-
-}
-
 uint16_t crc16_ibm(const uint8_t* data, size_t length) {
   uint16_t crc = 0xFFFF;
   for (size_t i = 0; i < length; ++i) {
@@ -86,6 +28,40 @@ uint16_t crc16_ibm(const uint8_t* data, size_t length) {
     }
   }
   return crc;
+}
+
+void AGV_PRO::set_auto_report(){
+
+  std::array<uint8_t, 13> buf = {
+    0xFE, 0xFE, 0x23, 0x01,
+    0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00
+  };
+
+  uint16_t crc = crc16_ibm(buf.data(), buf.size());
+  buf[11] = crc & 0xff;
+  buf[12] = (crc >> 8) & 0xff;
+
+  std::vector<uint8_t> data_vec(buf.begin(), buf.end());
+
+  auto port = serial_driver_->port();
+
+  try
+  {
+    port->send(data_vec);
+    // size_t bytes_transmit_size = port->send(data_vec);
+    // std::stringstream ss;
+    // for (auto b : data_vec) {
+    //   ss << std::hex << std::uppercase << std::setfill('0') << std::setw(2)
+    //      << static_cast<int>(b) << " ";
+    // }
+    // RCLCPP_INFO(this->get_logger(), "Sent %ld bytes: [%s]", bytes_transmit_size, ss.str().c_str());
+  }
+  catch(const std::exception &ex)
+  {
+    RCLCPP_ERROR(this->get_logger(), "Error Transmiting from serial port:%s",ex.what());
+  }
+
 }
 
 void AGV_PRO::cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
@@ -270,9 +246,100 @@ void AGV_PRO::Control()
     if (true == readData()) 
     {    
       publisherOdom(dt);
-      //RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
+      RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
       publisherVoltage();
     }
     lastTime = currentTime;
   }
+}
+
+AGV_PRO::AGV_PRO(std::string node_name):rclcpp::Node(node_name)
+{
+  this->declare_parameter<std::string>("port_name","/dev/agvpro_controller");
+  this->declare_parameter<std::string>("odometry.frame_id", "odom");
+  this->declare_parameter<std::string>("odometry.child_frame_id", "base_footprint");
+  this->declare_parameter<std::string>("imu.frame_id", "imu_link");
+  this->declare_parameter<std::string>("namespace", "");
+
+  this->get_parameter_or<std::string>("port_name",device_name_,std::string("/dev/agvpro_controller"));
+  this->get_parameter_or<std::string>("odometry.frame_id",frame_id_of_odometry_,std::string("odom"));
+  this->get_parameter_or<std::string>("odometry.child_frame_id",child_frame_id_of_odometry_,std::string("base_footprint"));
+  this->get_parameter_or<std::string>("imu.frame_id",frame_id_of_imu_,std::string("imu_link"));        
+  this->get_parameter_or<std::string>("namespace",name_space_,std::string(""));
+
+  if (name_space_ != "") {
+    frame_id_of_odometry_ = name_space_ + "/" + frame_id_of_odometry_;
+    child_frame_id_of_odometry_ = name_space_ + "/" + child_frame_id_of_odometry_;
+    frame_id_of_imu_ = name_space_ + "/" + frame_id_of_imu_;
+  }
+
+  odomBroadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(this);
+  pub_imu =  this->create_publisher<sensor_msgs::msg::Imu>("imu", 20);
+  pub_odom = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
+  pub_voltage = create_publisher<std_msgs::msg::Float32>("voltage", 10);
+  cmd_sub = this->create_subscription<geometry_msgs::msg::Twist>(
+    "/cmd_vel", 10, std::bind(&AGV_PRO::cmdCallback, this, std::placeholders::_1));
+      
+  drivers::serial_driver::SerialPortConfig config(
+    1000000,
+    drivers::serial_driver::FlowControl::NONE,
+    drivers::serial_driver::Parity::NONE,
+    drivers::serial_driver::StopBits::ONE
+  );
+
+  try{
+    io_context_ = std::make_shared<drivers::common::IoContext>(1);
+    serial_driver_ = std::make_shared<drivers::serial_driver::SerialDriver>(*io_context_);
+    serial_driver_->init_port(device_name_, config);
+    serial_driver_->port()->open();
+    
+    RCLCPP_INFO(this->get_logger(), "Serial port initialized successfully");
+    RCLCPP_INFO(this->get_logger(), "Using device: %s", serial_driver_->port().get()->device_name().c_str());
+    RCLCPP_INFO(this->get_logger(), "Baud_rate: %d", config.get_baud_rate());
+
+    AGV_PRO::set_auto_report();
+  }
+  catch (const std::exception &ex){
+    RCLCPP_ERROR(this->get_logger(), "Failed to initialize serial port: %s", ex.what());
+    return;
+  }
+  
+  AGV_PRO::Control();//Loop through data collection and publish the topic
+
+}
+
+AGV_PRO::~AGV_PRO()
+{ 
+  std::array<uint8_t, 13> buf = {
+    0xFE, 0xFE, 0x22, 0x01,
+    0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00
+  };
+
+  uint16_t crc = crc16_ibm(buf.data(), buf.size());
+  buf[11] = crc & 0xff;
+  buf[12] = (crc >> 8) & 0xff;
+
+  std::vector<uint8_t> data_vec(buf.begin(), buf.end());
+
+  auto port = serial_driver_->port();
+
+  try
+  {
+    port->send(data_vec);
+    // size_t bytes_transmit_size = port->send(data_vec);
+    // std::stringstream ss;
+    // for (auto b : data_vec) {
+    //   ss << std::hex << std::uppercase << std::setfill('0') << std::setw(2)
+    //      << static_cast<int>(b) << " ";
+    // }
+    // RCLCPP_INFO(this->get_logger(), "Sent %ld bytes: [%s]", bytes_transmit_size, ss.str().c_str());
+  }
+  catch(const std::exception &ex)
+  {
+    RCLCPP_ERROR(this->get_logger(), "Error Transmiting from serial port:%s",ex.what());
+  }
+
+  serial_driver_->port()->close();
+  RCLCPP_INFO(this->get_logger(),"Shutting down");
 }
