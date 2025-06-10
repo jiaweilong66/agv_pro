@@ -177,7 +177,7 @@
     <axis xyz="0 0 0" />
   </joint>
   
-  <link name="base_scan">
+  <link name="laser_link">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="0" />
@@ -208,7 +208,7 @@
     <origin xyz="0.22254 0 0.2339"
       rpy="0 0 0" />
     <parent link="base_link" />
-    <child link="base_scan" />
+    <child link="laser_link" />
     <axis xyz="0 0 0" />
   </joint>
 </robot>
