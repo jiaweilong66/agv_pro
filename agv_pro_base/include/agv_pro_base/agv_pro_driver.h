@@ -13,8 +13,8 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-#define RECEIVE_DATA_SIZE 13         //The length of the data sent by the esp32
-#define SEND_DATA_SIZE    13         //The length of data sent by ROS to the esp32
+#define RECEIVE_DATA_SIZE 14         //The length of the data sent by the esp32
+#define SEND_DATA_SIZE    14         //The length of data sent by ROS to the esp32
 #define RETURN_COMMAND 0x25
 
 extern std::array<double, 36> odom_pose_covariance;
@@ -31,7 +31,6 @@ private:
   bool readData();
   void publisherOdom(double dt);
   void publisherVoltage();
-  void clearSerialBuffer();
   void cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
   std::string frame_id_of_odometry_;
@@ -39,6 +38,8 @@ private:
   std::string frame_id_of_imu_;
   std::string name_space_;
   std::string device_name_;
+  
+  std::thread control_thread_;
 
   double x= 0.0;
   double y= 0.0;

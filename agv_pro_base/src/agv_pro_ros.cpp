@@ -32,15 +32,15 @@ uint16_t crc16_ibm(const uint8_t* data, size_t length) {
 
 void AGV_PRO::set_auto_report(){
 
-  std::array<uint8_t, 13> buf = {
-    0xFE, 0xFE, 0x23, 0x01,
-    0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00
+  std::array<uint8_t, 14> buf = {
+    0xFE, 0xFE, 0x0b, 0x23,
+    0x01, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00
   };
 
-  uint16_t crc = crc16_ibm(buf.data(), buf.size());
-  buf[11] = crc & 0xff;
+  uint16_t crc = crc16_ibm(buf.data(), 12);
   buf[12] = (crc >> 8) & 0xff;
+  buf[13] = crc & 0xff;
 
   std::vector<uint8_t> data_vec(buf.begin(), buf.end());
 
@@ -48,14 +48,13 @@ void AGV_PRO::set_auto_report(){
 
   try
   {
-    port->send(data_vec);
-    // size_t bytes_transmit_size = port->send(data_vec);
-    // std::stringstream ss;
-    // for (auto b : data_vec) {
-    //   ss << std::hex << std::uppercase << std::setfill('0') << std::setw(2)
-    //      << static_cast<int>(b) << " ";
-    // }
-    // RCLCPP_INFO(this->get_logger(), "Sent %ld bytes: [%s]", bytes_transmit_size, ss.str().c_str());
+    size_t bytes_transmit_size = port->send(data_vec);
+    std::stringstream ss;
+    for (auto b : data_vec) {
+      ss << std::hex << std::uppercase << std::setfill('0') << std::setw(2)
+         << static_cast<int>(b) << " ";
+    }
+    RCLCPP_INFO(this->get_logger(), "Sent %ld bytes: [%s]", bytes_transmit_size, ss.str().c_str());
   }
   catch(const std::exception &ex)
   {
@@ -70,22 +69,24 @@ void AGV_PRO::cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
   linearY = std::clamp(msg->linear.y, -1.0, 1.0);
   angularZ = std::clamp(msg->angular.z, -1.0, 1.0);
 
-  int16_t x_send = static_cast<int16_t>(linearX * 1000);
-  int16_t y_send = static_cast<int16_t>(linearY * 1000);
-  int16_t rot_send = static_cast<int16_t>(angularZ * 1000);
+  int16_t x_send = static_cast<int16_t>(linearX * 100);
+  int16_t y_send = static_cast<int16_t>(linearY * 100);
+  int16_t rot_send = static_cast<int16_t>(angularZ * 100);
 
-  uint8_t buf[13] = { 0xfe,0xfe,0x21 };
+  uint8_t buf[14] = { 0xfe,0xfe,0x0b,0x21 };
 
-  buf[3] = x_send & 0xff;
   buf[4] = (x_send >> 8) & 0xff;
-  buf[5] = y_send & 0xff;
+  buf[5] = x_send & 0xff;
   buf[6] = (y_send >> 8) & 0xff;
-  buf[7] = rot_send & 0xff;
+  buf[7] = y_send & 0xff;
   buf[8] = (rot_send >> 8) & 0xff;
+  buf[9] = rot_send & 0xff;
+  buf[10] = 0x00;
+  buf[11] = 0x00;
 
-  uint16_t crc = crc16_ibm(buf, 9);
-  buf[9] = crc & 0xff;
-  buf[10] = (crc >> 8) & 0xff;
+  uint16_t crc = crc16_ibm(buf, 12);
+  buf[12] = (crc >> 8) & 0xff;
+  buf[13] = crc & 0xff;
 
   std::vector<uint8_t> data_vec(buf, buf + sizeof(buf));
 
@@ -94,6 +95,8 @@ void AGV_PRO::cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
   try
   {
     port->send(data_vec);
+
+    //debug************************************
     // size_t bytes_transmit_size = port->send(data_vec);
     // std::stringstream ss;
     // for (auto b : data_vec) {
@@ -101,6 +104,8 @@ void AGV_PRO::cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
     //      << static_cast<int>(b) << " ";
     // }
     // RCLCPP_INFO(this->get_logger(), "Sent %ld bytes: [%s]", bytes_transmit_size, ss.str().c_str());
+    //debug************************************
+
   }
   catch(const std::exception &ex)
   {
@@ -108,27 +113,11 @@ void AGV_PRO::cmdCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
   }
 }
 
-void AGV_PRO::clearSerialBuffer() 
-{
-  auto port = serial_driver_->port();
-  std::vector<uint8_t> temp_buf(64);
-  size_t total_discarded = 0;
-
-  while (true) {
-    size_t n = port->receive(temp_buf);
-    if (n == 0) {
-      break;
-    }
-    total_discarded += n;
-  }
-
-  RCLCPP_WARN(this->get_logger(), "Serial buffer flushed, %zu bytes discarded.", total_discarded);
-}
-
 bool AGV_PRO::readData()
 {
   std::vector<uint8_t> buf_header(1);
-  std::vector<uint8_t> recv_buf(RECEIVE_DATA_SIZE);
+  std::vector<uint8_t> buf_length(1);
+  std::vector<uint8_t> data_buf(RECEIVE_DATA_SIZE-3);
 
   auto port = serial_driver_->port();
   
@@ -145,40 +134,56 @@ bool AGV_PRO::readData()
     }
   }
 
-  std::vector<uint8_t> remaining_buf(RECEIVE_DATA_SIZE - 2);
-  size_t ret = port->receive(remaining_buf);
-  if (ret != (RECEIVE_DATA_SIZE - 2)) {
-    RCLCPP_ERROR(this->get_logger(), "The received length is incorrect:%zu", ret);
-    clearSerialBuffer();
+  size_t ret = port->receive(buf_length);
+
+  if (buf_length[0] != 0x0b) {
+    RCLCPP_ERROR(this->get_logger(), "The received length is incorrect:%u", buf_length[0]);
     return false;
   }
 
-  recv_buf[0] = 0xFE;
-  recv_buf[1] = 0xFE;
-  std::copy(remaining_buf.begin(), remaining_buf.end(), recv_buf.begin() + 2);
-
-  if (recv_buf[2] != 0x25) {
-    RCLCPP_WARN(this->get_logger(), "Command error:0x%02X", recv_buf[2]);
-    clearSerialBuffer();
+  ret = port->receive(data_buf);
+  if (ret != data_buf.size())
+  {
+    RCLCPP_ERROR(this->get_logger(), "Failed to receive full payload");
     return false;
   }
 
-  uint16_t received_crc = recv_buf[11] | (recv_buf[12] << 8);
-  uint16_t computed_crc = crc16_ibm(recv_buf.data(), 11);
+  std::vector<uint8_t> recv_buf;
+  recv_buf.push_back(0xFE);
+  recv_buf.push_back(0xFE);
+  recv_buf.push_back(0x0B);
+  recv_buf.insert(recv_buf.end(), data_buf.begin(), data_buf.end());
+  
+  //debug************************************
+  // std::stringstream ss;
+  // for (const auto& byte : recv_buf) {
+  //     ss << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+  //       << static_cast<int>(byte) << " ";
+  // }
+  // RCLCPP_INFO(this->get_logger(), "recv_buf: [%s]", ss.str().c_str());
+  //debug************************************
+
+  if (recv_buf[3] != 0x25) {
+    // RCLCPP_WARN(this->get_logger(), "Command error:0x%02X", recv_buf[2]);
+    return false;
+  }
+
+  uint16_t received_crc = recv_buf[13] | (recv_buf[12] << 8);
+  uint16_t computed_crc = crc16_ibm(recv_buf.data(), 12);
 
   if (received_crc != computed_crc) {
-    RCLCPP_ERROR(this->get_logger(), "CRC error: received 0x%04X, calculated 0x%04X", received_crc, computed_crc);
+    RCLCPP_WARN(this->get_logger(), "CRC error: received 0x%04X, calculated 0x%04X", received_crc, computed_crc);
     return false;
   }
 
-  vx = (static_cast<double>(recv_buf[3]) - 128.0) * 0.01;
-  vy = (static_cast<double>(recv_buf[4]) - 128.0) * 0.01;
-  vtheta = (static_cast<double>(recv_buf[5]) - 128.0) * 0.01;
+  vx = static_cast<double>(static_cast<int8_t>(recv_buf[4])) * 0.01;
+  vy = static_cast<double>(static_cast<int8_t>(recv_buf[5])) * 0.01;
+  vtheta = static_cast<double>(static_cast<int8_t>(recv_buf[6])) * 0.01;
 
-  motor_status = recv_buf[6];
-  motor_error  = recv_buf[7];
-  battery_voltage = static_cast<float>(recv_buf[8]) / 10.0f;
-  enable_status = recv_buf[9];
+  motor_status = recv_buf[7];
+  motor_error  = recv_buf[8];
+  battery_voltage = static_cast<float>(recv_buf[9]) / 10.0f;
+  enable_status = recv_buf[10];
 
   return true;
 }
@@ -246,7 +251,7 @@ void AGV_PRO::Control()
     if (true == readData()) 
     {    
       publisherOdom(dt);
-      RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
+      //RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
       publisherVoltage();
     }
     lastTime = currentTime;
@@ -304,21 +309,20 @@ AGV_PRO::AGV_PRO(std::string node_name):rclcpp::Node(node_name)
     return;
   }
   
-  AGV_PRO::Control();//Loop through data collection and publish the topic
-
+  control_thread_ = std::thread(&AGV_PRO::Control, this);
 }
 
 AGV_PRO::~AGV_PRO()
 { 
-  std::array<uint8_t, 13> buf = {
-    0xFE, 0xFE, 0x22, 0x01,
-    0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00
+  std::array<uint8_t, 14> buf = {
+    0xFE, 0xFE, 0x0b, 0x22, 
+    0x01, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00
   };
 
-  uint16_t crc = crc16_ibm(buf.data(), buf.size());
-  buf[11] = crc & 0xff;
+  uint16_t crc = crc16_ibm(buf.data(), 12);
   buf[12] = (crc >> 8) & 0xff;
+  buf[13] = crc & 0xff;
 
   std::vector<uint8_t> data_vec(buf.begin(), buf.end());
 
@@ -327,13 +331,6 @@ AGV_PRO::~AGV_PRO()
   try
   {
     port->send(data_vec);
-    // size_t bytes_transmit_size = port->send(data_vec);
-    // std::stringstream ss;
-    // for (auto b : data_vec) {
-    //   ss << std::hex << std::uppercase << std::setfill('0') << std::setw(2)
-    //      << static_cast<int>(b) << " ";
-    // }
-    // RCLCPP_INFO(this->get_logger(), "Sent %ld bytes: [%s]", bytes_transmit_size, ss.str().c_str());
   }
   catch(const std::exception &ex)
   {
