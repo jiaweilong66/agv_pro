@@ -31,6 +31,14 @@
 #include "lslidar_driver/lslidar_driver.h"
 #include <functional>
 
+int truncated_mode_=0;          //多角度屏蔽开关：默认为0，如果需要屏蔽多个角度，则truncated_mode_赋值为1。
+
+int scan_crop_min[]={0,180}; 	//雷达屏蔽角度，这里屏蔽角度为135°到225°，
+                                //如果要多角度屏蔽，如10~30，50~60，改为：
+                                //scan_angle_min[]={10，50};scan_angle_max[]={30，60};
+int scan_crop_max[]={90,270};     //修改后编译即可
+
+
 namespace lslidar_driver
 {
 
@@ -82,7 +90,7 @@ namespace lslidar_driver
 		this->declare_parameter<bool>("use_gps_ts", false);
 		this->declare_parameter<bool>("high_reflection", false);
 		this->declare_parameter<bool>("compensation", false);
-		this->declare_parameter<bool>("pubScan", false);
+		this->declare_parameter<bool>("pubScan", true);
 		this->declare_parameter<bool>("pubPointCloud2", false);
 		this->declare_parameter<double>("angle_disable_min", 0.0);
 		this->declare_parameter<double>("angle_disable_max", 0.0);
@@ -970,7 +978,9 @@ namespace lslidar_driver
 				if (pubScan)
 				{
 					auto scan = sensor_msgs::msg::LaserScan::UniquePtr(new sensor_msgs::msg::LaserScan());
-					int scan_num = count_num * 2;
+					////int scan_num = count_num * 2;
+					int scan_num = count_num ;
+
 					std::vector<ScanPoint> points;
 					rclcpp::Time start_time;
 					float scan_time;
@@ -1017,6 +1027,16 @@ namespace lslidar_driver
 							scan->ranges[point_idx] = (float)dist;
 							scan->intensities[point_idx] = points[i].intensity;
 						}
+						if(truncated_mode_){
+							int len=sizeof(scan_crop_max) / sizeof(scan_crop_max[0]) ;
+							for(int j=0;j<len;++j){
+								if((point_idx>=(scan_crop_min[j]*count_num / 360)) && (point_idx<=(scan_crop_max[j]*count_num / 360))){
+									scan->ranges[point_idx] = std::numeric_limits<float>::infinity();
+									scan->intensities[point_idx] = 0;
+									}
+								}
+							}
+						/*
 						if (points[i + 3000].range == 0.0)
 						{
 							scan->ranges[point_idx + count_num] = std::numeric_limits<float>::infinity();
@@ -1027,7 +1047,7 @@ namespace lslidar_driver
 							double dist = points[i+3000].range;
 							scan->ranges[point_idx + count_num] = (float)dist;
 							scan->intensities[point_idx + count_num] = points[i + 3000].intensity;
-						}
+						}*/
 					}
 					scan_pub->publish(std::move(scan));
 				}
@@ -1164,6 +1184,16 @@ namespace lslidar_driver
 							scan->ranges[point_idx] = (float)dist;
 						}
 						scan->intensities[point_idx] = points[i].intensity;
+						
+						if(truncated_mode_){
+						int len=sizeof(scan_crop_max) / sizeof(scan_crop_max[0]) ;
+						for(int j=0;j<len;++j){
+							if((point_idx>=(scan_crop_min[j]*count_num / 360)) && (point_idx<=(scan_crop_max[j]*count_num / 360))){
+								scan->ranges[point_idx] = std::numeric_limits<float>::infinity();
+								scan->intensities[point_idx] = 0;
+								}
+							}
+						}
 					}
 					scan_pub->publish(std::move(scan));
 				}
