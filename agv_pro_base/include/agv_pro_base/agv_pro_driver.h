@@ -39,8 +39,6 @@ private:
   std::string name_space_;
   std::string device_name_;
   
-  std::thread control_thread_;
-
   double x= 0.0;
   double y= 0.0;
   double theta= 0.0;
@@ -60,6 +58,7 @@ private:
   float battery_voltage = 0.0f;
 
   rclcpp::Time currentTime, lastTime;
+  rclcpp::TimerBase::SharedPtr control_timer_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odom;
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu;
   rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr pub_voltage;

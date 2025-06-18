@@ -243,18 +243,18 @@ void AGV_PRO::publisherOdom(double dt)
 
 void AGV_PRO::Control()
 {
-  lastTime = this->get_clock()->now();
-  while(rclcpp::ok())
+  if (true == readData())
   {
     currentTime = this->get_clock()->now();
-    double dt = (currentTime - lastTime).seconds();
-    if (true == readData()) 
-    {    
-      publisherOdom(dt);
-      //RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
-      publisherVoltage();
+    double dt = 0.0;
+    if (lastTime.nanoseconds() != 0) {
+      dt = (currentTime - lastTime).seconds();
     }
+
     lastTime = currentTime;
+    publisherOdom(dt);
+    RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
+    publisherVoltage();
   }
 }
 
@@ -284,6 +284,8 @@ AGV_PRO::AGV_PRO(std::string node_name):rclcpp::Node(node_name)
   pub_voltage = create_publisher<std_msgs::msg::Float32>("voltage", 10);
   cmd_sub = this->create_subscription<geometry_msgs::msg::Twist>(
     "/cmd_vel", 10, std::bind(&AGV_PRO::cmdCallback, this, std::placeholders::_1));
+
+  lastTime = this->get_clock()->now();
       
   drivers::serial_driver::SerialPortConfig config(
     1000000,
@@ -309,7 +311,11 @@ AGV_PRO::AGV_PRO(std::string node_name):rclcpp::Node(node_name)
     return;
   }
   
-  control_thread_ = std::thread(&AGV_PRO::Control, this);
+  control_timer_ = this->create_wall_timer(
+  std::chrono::milliseconds(20),
+  std::bind(&AGV_PRO::Control, this)
+  );
+
 }
 
 AGV_PRO::~AGV_PRO()
