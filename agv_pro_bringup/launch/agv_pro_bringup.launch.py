@@ -1,6 +1,6 @@
 import os
 from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch_ros.actions import Node,PushRosNamespace
 from launch.actions import DeclareLaunchArgument,IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -26,6 +26,13 @@ def generate_launch_description():
             default_value=port_name_arg,
             description='port name, e.g. ttyACM0'),
 
+        DeclareLaunchArgument(
+            'namespace',
+            default_value='',
+            description='Namespace for nodes'),
+
+        PushRosNamespace(namespace),
+
         Node(
             package='agv_pro_base',
             executable='agv_pro_node',
@@ -35,6 +42,7 @@ def generate_launch_description():
                 'port_name': port_name_arg,
                 'namespace': namespace,             
             }],
+            remappings=[('cmd_vel', '/cmd_vel')]
         ),
 
         Node(

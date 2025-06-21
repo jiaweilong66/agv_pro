@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot name="AGV pro" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <link name="base_footprint"/>
+  <xacro:arg name="namespace" default=""/>
+  <xacro:property name="namespace" value="$(arg namespace)"/>
 
-  <joint name="base_joint" type="fixed">
-    <parent link="base_footprint"/>
-    <child link="base_link" />
+  <link name="${namespace}base_footprint"/>
+
+  <joint name="${namespace}base_joint" type="fixed">
+    <parent link="${namespace}base_footprint"/>
+    <child link="${namespace}base_link" />
     <origin xyz="0 0 0.020" rpy="0 0 0"/>
   </joint>
 
-  <link name="base_link">
+  <link name="${namespace}base_link">
     <inertial>
       <origin xyz="-0.0076254 -0.00023134 0.06693" rpy="0 0 0" />
       <mass value="19.236" />
@@ -37,7 +40,7 @@
     </collision>
   </link>
 
-  <link name="right_rear_wheel_link">
+  <link name="${namespace}right_rear_wheel_link">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <mass value="0.21659" />
@@ -66,14 +69,14 @@
     </collision>
   </link>
   
-  <joint name="right_rear_wheel_joint" type="continuous">
+  <joint name="${namespace}right_rear_wheel_joint" type="continuous">
     <origin xyz="-0.171806101587598 -0.179900399999999 0.0518836514526621" rpy="0 0 0" />
-    <parent link="base_link" />
-    <child link="right_rear_wheel_link" />
+    <parent link="${namespace}base_link" />
+    <child link="${namespace}right_rear_wheel_link" />
     <axis xyz="0 1 0" />
   </joint>
   
-  <link name="right_front_wheel_link">
+  <link name="${namespace}right_front_wheel_link">
     <inertial>
       <origin xyz="6.6563E-05 -0.019725 8.3836E-05" rpy="0 0 0" />
       <mass value="0.21659122149244" />
@@ -100,15 +103,15 @@
     </collision>
   </link>
   
-  <joint name="right_front_wheel_joint" type="continuous">
+  <joint name="${namespace}right_front_wheel_joint" type="continuous">
     <origin xyz="-0.17181 0.1799 0.051884"
       rpy="0 0 0" />
-    <parent link="base_link" />
-    <child link="right_front_wheel_link" />
+    <parent link="${namespace}base_link" />
+    <child link="${namespace}right_front_wheel_link" />
     <axis xyz="0 1 0" />
   </joint>
   
-  <link name="left_front_wheel_link">
+  <link name="${namespace}left_front_wheel_link">
     <inertial>
       <origin xyz="1.4671E-06 -0.019803 4.3218E-06" rpy="0 0 0" />
       <mass value="0.3015" />
@@ -135,15 +138,15 @@
     </collision>
   </link>
   
-  <joint name="left_front_wheel_joint" type="continuous">
+  <joint name="${namespace}left_front_wheel_joint" type="continuous">
     <origin xyz="0.17128 0.1799 0.052"
       rpy="0 0 0" />
-    <parent link="base_link" />
-    <child link="left_front_wheel_link" />
+    <parent link="${namespace}base_link" />
+    <child link="${namespace}left_front_wheel_link" />
     <axis xyz="0 1 0" />
   </joint>
   
-  <link name="left_rear_wheel_link">
+  <link name="${namespace}left_rear_wheel_link">
     <inertial>
       <origin xyz="-2.4454E-06 0.019725 -4.3121E-06" rpy="0 0 0" />
       <mass value="0.29613" />
@@ -170,14 +173,14 @@
     </collision>
   </link>
   
-  <joint name="left_rear_wheel_joint" type="continuous">
+  <joint name="${namespace}left_rear_wheel_joint" type="continuous">
     <origin xyz="0.17128 -0.1799 0.052" rpy="0 0 0" />
-    <parent link="base_link" />
-    <child link="left_rear_wheel_link" />
+    <parent link="${namespace}base_link" />
+    <child link="${namespace}left_rear_wheel_link" />
     <axis xyz="0 1 0" />
   </joint>
   
-  <link name="laser_link">
+  <link name="${namespace}laser_link">
     <inertial>
       <origin xyz="-0.0035142 -2.8248E-05 0.0010013" rpy="0 0 0" />
       <mass value="0.049095" />
@@ -204,9 +207,9 @@
     </collision>
   </link>
   
-  <joint name="lidar_joint" type="fixed">
+  <joint name="${namespace}lidar_joint" type="fixed">
     <origin xyz="0.17891 0 0.20928" rpy="0 0 0" />
-    <parent link="base_link" />
-    <child link="laser_link" />
+    <parent link="${namespace}base_link" />
+    <child link="${namespace}laser_link" />
   </joint>
 </robot>
