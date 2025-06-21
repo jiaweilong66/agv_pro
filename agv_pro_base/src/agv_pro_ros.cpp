@@ -196,15 +196,8 @@ void AGV_PRO::publisherVoltage()
 }
 
 void AGV_PRO::publisherOdom(double dt)
-{   
-  geometry_msgs::msg::TransformStamped odom_trans;
-  odom_trans.header.stamp = this->get_clock()->now();
-  odom_trans.header.frame_id = "odom";
-  odom_trans.child_frame_id = "base_footprint";
-
-  tf2::Quaternion quat;
-  quat.setRPY(0.0, 0.0, theta);
-  geometry_msgs::msg::Quaternion odom_quat = tf2::toMsg(quat);
+{
+  currentTime = this->get_clock()->now();
 
   double delta_x = (vx * cos(theta) - vy * sin(theta)) * dt;
   double delta_y = (vx * sin(theta) + vy * cos(theta)) * dt;
@@ -214,18 +207,26 @@ void AGV_PRO::publisherOdom(double dt)
   y += delta_y;
   theta += delta_th;
 
+  geometry_msgs::msg::TransformStamped odom_trans;
+  odom_trans.header.stamp = currentTime;
+  odom_trans.header.frame_id = frame_id_of_odometry_;
+  odom_trans.child_frame_id = child_frame_id_of_odometry_;
+
+  tf2::Quaternion quat;
+  quat.setRPY(0.0, 0.0, theta);
+  geometry_msgs::msg::Quaternion odom_quat = tf2::toMsg(quat);
+
   odom_trans.transform.translation.x = x; 
   odom_trans.transform.translation.y = y; 
   odom_trans.transform.translation.z = 0.0;
-
   odom_trans.transform.rotation = odom_quat;
 
   odomBroadcaster->sendTransform(odom_trans);
 
   nav_msgs::msg::Odometry odom;
-  odom.header.stamp = this->get_clock()->now();;
-  odom.header.frame_id = "odom";
-  odom.child_frame_id = "base_footprint";
+  odom.header.stamp = currentTime;
+  odom.header.frame_id = frame_id_of_odometry_;
+  odom.child_frame_id = child_frame_id_of_odometry_;
 
   odom.pose.pose.position.x = x;
   odom.pose.pose.position.y = y;
