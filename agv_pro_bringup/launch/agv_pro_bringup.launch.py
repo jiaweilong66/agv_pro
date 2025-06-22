@@ -2,7 +2,7 @@ import os
 from launch import LaunchDescription
 from launch_ros.actions import Node,PushRosNamespace
 from launch.actions import DeclareLaunchArgument,IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import Command,LaunchConfiguration,PythonExpression
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
@@ -17,8 +17,12 @@ def generate_launch_description():
         'agv_pro.urdf'
     )
 
-    with open(urdf_file, 'r') as file:
-        robot_description_content = file.read()
+    robot_description_content = Command([
+        'xacro ',
+        urdf_file,
+        ' namespace:=',
+        PythonExpression(['"', namespace, '" + "/" if "', namespace, '" != "" else ""']),
+    ])
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -55,7 +59,8 @@ def generate_launch_description():
             package='robot_state_publisher',
             executable='robot_state_publisher',
             name='robot_state_publisher',
-            parameters=[{'robot_description': robot_description_content}]
+            parameters=[{'robot_description': robot_description_content}],
+            output='screen'
         ),
 
         IncludeLaunchDescription(
