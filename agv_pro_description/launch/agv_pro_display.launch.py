@@ -1,11 +1,14 @@
 import os
 from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch_ros.actions import Node,PushRosNamespace
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command,LaunchConfiguration,PythonExpression
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
+
+    namespace = LaunchConfiguration('namespace', default='')
 
     use_rviz = LaunchConfiguration('use_rviz', default='true')
 
@@ -20,10 +23,21 @@ def generate_launch_description():
         'agv_pro.urdf'
     )
 
-    with open(urdf_file, 'r') as file:
-        robot_description_content = file.read()
+    robot_description_content = Command([
+        'xacro ',
+        urdf_file,
+        ' namespace:=',
+        PythonExpression(['"', namespace, '" + "/" if "', namespace, '" != "" else ""']),
+    ])
 
     return LaunchDescription([
+
+        DeclareLaunchArgument(
+            'namespace',
+            default_value='',
+            description='Namespace for nodes'),
+
+        PushRosNamespace(namespace),
 
         Node(
             package='joint_state_publisher',
