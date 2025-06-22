@@ -254,7 +254,7 @@ void AGV_PRO::Control()
 
     lastTime = currentTime;
     publisherOdom(dt);
-    RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
+    // RCLCPP_INFO(this->get_logger(), "dt:%f", dt);
     publisherVoltage();
   }
 }
