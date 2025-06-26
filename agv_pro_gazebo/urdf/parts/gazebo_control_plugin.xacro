@@ -14,7 +14,6 @@
         <frontRightJoint>front_right_wheel_joint</frontRightJoint>  <!-- 前右轮 -->
         <rearLeftJoint>rear_left_wheel_joint</rearLeftJoint>        <!-- 后左轮 -->
         <rearRightJoint>rear_right_wheel_joint</rearRightJoint>     <!-- 后右轮 -->
-
         <wheelDiameter>0.1</wheelDiameter>   <!-- 轮子直径 -->
         <wheelSeparation>0.36</wheelSeparation>  <!-- 轮距（车辆宽度） -->
 
