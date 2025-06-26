@@ -43,7 +43,6 @@
                 <state_interface name="effort" />
             </joint>
         </ros2_control>
-
         <gazebo>
             <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
                 <parameters>$(find agv_pro_gazebo)/config/agv_control.yaml</parameters>
