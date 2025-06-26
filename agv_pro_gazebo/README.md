@@ -2,7 +2,6 @@
 ROS2 packages for AGV_Pro
 
 > Software environment for Jetson Orin Nano
-
 ```
 ubuntu 22.04
 ros2 humble
