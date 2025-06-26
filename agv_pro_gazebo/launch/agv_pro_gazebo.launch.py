@@ -10,7 +10,6 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     pkg_name = 'agv_pro_gazebo'
     pkg_dir = get_package_share_directory(pkg_name)
-
     xacro_file = os.path.join(pkg_dir, 'urdf', 'agv_pro.xacro')
     world_file = os.path.join(pkg_dir, 'worlds', 'empty.world')
     rviz_config = os.path.join(pkg_dir, 'rviz', 'agvpro_display.rviz')
