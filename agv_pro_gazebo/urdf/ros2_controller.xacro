@@ -46,7 +46,7 @@
 
         <gazebo>
             <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-                <parameters>$(find agv_pro_description)/config/agv_control.yaml</parameters>
+                <parameters>$(find agv_pro_gazebo)/config/agv_control.yaml</parameters>
                 <ros>
                     <remapping>/omni_drive_controller/cmd_vel:=/cmd_vel</remapping>
                     <remapping>/omni_drive_controller/odom:=/odom</remapping>

@@ -10,12 +10,12 @@ def generate_launch_description():
     use_rviz = LaunchConfiguration('use_rviz', default='true')
 
     rviz_config_dir = os.path.join(
-        get_package_share_directory('agv_pro_description'),
+        get_package_share_directory('agv_pro_gazebo'),
         'rviz',
         'agvpro_display.rviz')
 
     urdf_file = os.path.join(
-        get_package_share_directory('agv_pro_description'),
+        get_package_share_directory('agv_pro_gazebo'),
         'urdf',
         'agv_pro.urdf'
     )

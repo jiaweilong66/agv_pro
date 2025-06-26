@@ -27,33 +27,33 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="file://$(find agv_pro_description)/meshes/base_link.stl" />
+        <mesh filename="file://$(find agv_pro_gazebo)/meshes/base_link.stl" />
       </geometry>
       <material name=""/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="file://$(find agv_pro_description)/meshes/base_link.stl" />
+        <mesh filename="file://$(find agv_pro_gazebo)/meshes/base_link.stl" />
       </geometry>
     </collision>
   </link>
 
   <!-- Include wheel macros & controller definitions -->
-  <xacro:include filename="$(find agv_pro_description)/urdf/parts/wheel_macro.xacro"/>
+  <xacro:include filename="$(find agv_pro_gazebo)/urdf/parts/wheel_macro.xacro"/>
 
   <!-- Wheels definition -->
   <!-- Right Rear Wheel -->
-  <xacro:wheel name="right_rear_wheel" mesh="file://$(find agv_pro_description)/meshes/wheel_rb_link.stl" origin_xyz="-0.1718 -0.1799 0.05188" origin_rpy="0 0 0" mass="0.21659" ixx="0.00051181" ixy="2.1577E-08" ixz="2.538E-07" iyy="0.00097519" iyz="-2.3635E-07" izz="0.00051178"/>
+  <xacro:wheel name="right_rear_wheel" mesh="file://$(find agv_pro_gazebo)/meshes/wheel_rb_link.stl" origin_xyz="-0.1718 -0.1799 0.05188" origin_rpy="0 0 0" mass="0.21659" ixx="0.00051181" ixy="2.1577E-08" ixz="2.538E-07" iyy="0.00097519" iyz="-2.3635E-07" izz="0.00051178"/>
 
   <!-- Right Front Wheel -->
-  <xacro:wheel name="right_front_wheel" mesh="file://$(find agv_pro_description)/meshes/wheel_rf_link.stl" origin_xyz="-0.17181 0.1799 0.051884" origin_rpy="0 0 0" mass="0.21659" ixx="0.00051181" ixy="2.1577E-08" ixz="2.538E-07" iyy="0.00097519" iyz="-2.3635E-07" izz="0.00051178"/>
+  <xacro:wheel name="right_front_wheel" mesh="file://$(find agv_pro_gazebo)/meshes/wheel_rf_link.stl" origin_xyz="-0.17181 0.1799 0.051884" origin_rpy="0 0 0" mass="0.21659" ixx="0.00051181" ixy="2.1577E-08" ixz="2.538E-07" iyy="0.00097519" iyz="-2.3635E-07" izz="0.00051178"/>
 
   <!-- Left Front Wheel -->
-  <xacro:wheel name="left_front_wheel" mesh="file://$(find agv_pro_description)/meshes/wheel_lf_link.stl" origin_xyz="0.17128 0.1799 0.052" origin_rpy="0 0 0" mass="0.3015" ixx="0.00052475" ixy="-2.2533E-07" ixz="-4.1904E-07" iyy="0.00099948" iyz="7.5332E-08" izz="0.00052362"/>
+  <xacro:wheel name="left_front_wheel" mesh="file://$(find agv_pro_gazebo)/meshes/wheel_lf_link.stl" origin_xyz="0.17128 0.1799 0.052" origin_rpy="0 0 0" mass="0.3015" ixx="0.00052475" ixy="-2.2533E-07" ixz="-4.1904E-07" iyy="0.00099948" iyz="7.5332E-08" izz="0.00052362"/>
 
   <!-- Left Rear Wheel -->
-  <xacro:wheel name="left_rear_wheel" mesh="file://$(find agv_pro_description)/meshes/wheel_lb_link.stl" origin_xyz="0.17128 -0.1799 0.052" origin_rpy="0 0 0" mass="0.29613" ixx="0.00051227" ixy="-2.0628E-07" ixz="-4.9074E-07" iyy="0.0009752" iyz="1.173E-07" izz="0.00051131"/>
+  <xacro:wheel name="left_rear_wheel" mesh="file://$(find agv_pro_gazebo)/meshes/wheel_lb_link.stl" origin_xyz="0.17128 -0.1799 0.052" origin_rpy="0 0 0" mass="0.29613" ixx="0.00051227" ixy="-2.0628E-07" ixz="-4.9074E-07" iyy="0.0009752" iyz="1.173E-07" izz="0.00051131"/>
 
 
   <!-- Lidar definition -->
@@ -66,14 +66,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="file://$(find agv_pro_description)/meshes/laser_link.stl" />
+        <mesh filename="file://$(find agv_pro_gazebo)/meshes/laser_link.stl" />
       </geometry>
       <material name=""/>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="file://$(find agv_pro_description)/meshes/laser_link.stl" />
+        <mesh filename="file://$(find agv_pro_gazebo)/meshes/laser_link.stl" />
       </geometry>
     </collision>
   </link>
@@ -85,8 +85,8 @@
   </joint>
 
   <!-- Include ros2_controller.xacro to define controllers -->
-  <xacro:include filename="$(find agv_pro_description)/urdf/parts/gazebo_control_plugin.xacro"/>
-  <xacro:include filename="$(find agv_pro_description)/urdf/ros2_controller.xacro"/>
+  <xacro:include filename="$(find agv_pro_gazebo)/urdf/parts/gazebo_control_plugin.xacro"/>
+  <xacro:include filename="$(find agv_pro_gazebo)/urdf/ros2_controller.xacro"/>
   <xacro:ros2_controller/>
   <xacro:gazebo_control_plugin/>
 

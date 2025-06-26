@@ -16,7 +16,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
  
     # Process the URDF file
-    pkg_path = os.path.join(get_package_share_directory('agv_pro_description'))
+    pkg_path = os.path.join(get_package_share_directory('agv_pro_gazebo'))
     xacro_file = os.path.join(pkg_path,'urdf','agv_pro.xacro')
     robot_description_config = xacro.process_file(xacro_file)
     
