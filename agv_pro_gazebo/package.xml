@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>agv_pro_description</name>
+  <name>agv_pro_gazebo</name>
   <version>1.0.0</version>
-  <description>
-    <p>URDF Description package for AGV Pro</p>
-  </description>
+  <description>URDF Description package for AGV Pro</description>
 
   <maintainer email="weijun.xie@elephantrobotics.com">Weijun Xie</maintainer>
   <license>BSD-3-Clause</license>
@@ -23,13 +20,10 @@
   <depend>sensor_msgs</depend>
   <depend>rclcpp</depend>
   <depend>tf2</depend>
-  <depend>gazebo_ros_pkgs</depend>
   <depend>ros2_control</depend>
   <depend>controller_manager</depend>
   <depend>joint_state_broadcaster</depend>
   <depend>diff_drive_controller</depend>
-
-  <!-- 如果你的 launch 文件里直接调用了 teleop_twist_keyboard -->
   <depend>teleop_twist_keyboard</depend>
 
   <!-- Test dependencies -->
@@ -37,9 +31,7 @@
   <test_depend>ament_lint_common</test_depend>
 
   <export>
-    <!-- Use ament_cmake build type -->
     <build_type>ament_cmake</build_type>
-    <!-- Register gazebo models path -->
     <gazebo_ros gazebo_model_path="${prefix}/models"/>
   </export>
 </package>
