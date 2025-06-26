@@ -4,17 +4,42 @@
   <name>agv_pro_description</name>
   <version>1.0.0</version>
   <description>
-    <p>URDF Description package for AGV pro</p>
+    <p>URDF Description package for AGV Pro</p>
   </description>
-  <maintainer email="weijun.xie@elephantrobotics.com">weijun.xie</maintainer>
-  <license>BSD-3-Clause license</license>
 
+  <maintainer email="weijun.xie@elephantrobotics.com">Weijun Xie</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <!-- Build tool -->
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>xacro</buildtool_depend>
 
+  <!-- Build dependencies -->
+  <depend>gazebo_ros_pkgs</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>tf2</depend>
+  <depend>gazebo_ros_pkgs</depend>
+  <depend>ros2_control</depend>
+  <depend>controller_manager</depend>
+  <depend>joint_state_broadcaster</depend>
+  <depend>diff_drive_controller</depend>
+
+  <!-- 如果你的 launch 文件里直接调用了 teleop_twist_keyboard -->
+  <depend>teleop_twist_keyboard</depend>
+
+  <!-- Test dependencies -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
   <export>
+    <!-- Use ament_cmake build type -->
     <build_type>ament_cmake</build_type>
+    <!-- Register gazebo models path -->
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
   </export>
 </package>
