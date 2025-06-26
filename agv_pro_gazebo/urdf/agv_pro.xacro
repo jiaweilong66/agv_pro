@@ -89,5 +89,4 @@
   <xacro:include filename="$(find agv_pro_gazebo)/urdf/ros2_controller.xacro"/>
   <xacro:ros2_controller/>
   <xacro:gazebo_control_plugin/>
-
 </robot>
