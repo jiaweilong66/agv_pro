@@ -27,6 +27,14 @@
   <depend>diff_drive_controller</depend>
   <depend>teleop_twist_keyboard</depend>
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>navigation2</depend>
+  <depend>nav2_bringup</depend>
+  <depend>nav2_simple_commander</depend>
+  <depend>nav2_map_server</depend>
+  <depend>slam_toolbox</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>rviz2</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
