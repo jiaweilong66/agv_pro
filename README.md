@@ -26,7 +26,7 @@
       <geometry>
         <mesh filename="package://agv_pro_description/meshes/base_link.stl"/>
       </geometry>
-      <material>
+      <material name="base_material">
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
@@ -52,7 +52,7 @@
       <geometry>
         <mesh filename="package://agv_pro_description/meshes/wheel_rb_link.stl"/>
       </geometry>
-      <material>
+      <material name="wheel_rb_material">
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
@@ -84,7 +84,7 @@
       <geometry>
         <mesh filename="package://agv_pro_description/meshes/wheel_rf_link.stl"/>
       </geometry>
-      <material>
+      <material name="wheel_rf_material">
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
@@ -116,7 +116,7 @@
       <geometry>
         <mesh filename="package://agv_pro_description/meshes/wheel_lf_link.stl"/>
       </geometry>
-      <material>
+      <material name="wheel_lf_material">
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
@@ -148,7 +148,7 @@
       <geometry>
         <mesh filename="package://agv_pro_description/meshes/wheel_lb_link.stl"/>
       </geometry>
-      <material>
+      <material name="wheel_lb_material">
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
@@ -180,7 +180,7 @@
       <geometry>
         <mesh filename="package://agv_pro_description/meshes/laser_link.stl"/>
       </geometry>
-      <material>
+      <material name="laser_material">
         <color rgba="1 1 1 1"/>
       </material>
     </visual>
