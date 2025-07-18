@@ -1,0 +1,179 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+
+    <!-- 地面和平行向光源 -->
+    <include><uri>model://ground_plane</uri></include>
+    <include><uri>model://sun</uri></include>
+
+    <!-- 外墙模型 -->
+    <model name="outer_walls">
+      <static>true</static>
+      <!-- 东墙 -->
+      <link name="east_wall">
+        <pose>5.05 0 1.0 0 0 0</pose>
+        <collision name="coll_east">
+          <geometry><box><size>0.1 10.0 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_east">
+          <geometry><box><size>0.1 10.0 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <!-- 西墙 -->
+      <link name="west_wall">
+        <pose>-5.05 0 1.0 0 0 0</pose>
+        <collision name="coll_west">
+          <geometry><box><size>0.1 10.0 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_west">
+          <geometry><box><size>0.1 10.0 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <!-- 北墙 -->
+      <link name="north_wall">
+        <pose>0 5.05 1.0 0 0 0</pose>
+        <collision name="coll_north">
+          <geometry><box><size>10.0 0.1 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_north">
+          <geometry><box><size>10.0 0.1 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <!-- 南墙，左右分段，各长 4.5m（中间留 1.0m 门口） -->
+      <link name="south_wall_left">
+        <pose>-2.75 -5.05 1.0 0 0 0</pose>
+        <collision name="coll_south_l">
+          <geometry><box><size>4.5 0.1 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_south_l">
+          <geometry><box><size>4.5 0.1 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <link name="south_wall_right">
+        <pose>2.75 -5.05 1.0 0 0 0</pose>
+        <collision name="coll_south_r">
+          <geometry><box><size>4.5 0.1 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_south_r">
+          <geometry><box><size>4.5 0.1 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 内墙模型 -->
+    <model name="inner_walls">
+      <static>true</static>
+      <!-- 东墙 -->
+      <link name="inner_east">
+        <pose>2.55 0 1.0 0 0 0</pose>
+        <collision name="coll_ie">
+          <geometry><box><size>0.1 5.0 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_ie">
+          <geometry><box><size>0.1 5.0 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <!-- 西墙 -->
+      <link name="inner_west">
+        <pose>-2.55 0 1.0 0 0 0</pose>
+        <collision name="coll_iw">
+          <geometry><box><size>0.1 5.0 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_iw">
+          <geometry><box><size>0.1 5.0 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <!-- 北墙，左右分段，各长 2.0m（中间留 1.0m 门口，与外墙相同） -->
+      <link name="inner_north_left">
+        <pose>-1.5 2.55 1.0 0 0 0</pose>
+        <collision name="coll_inl">
+          <geometry><box><size>2.0 0.1 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_inl">
+          <geometry><box><size>2.0 0.1 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <link name="inner_north_right">
+        <pose>1.5 2.55 1.0 0 0 0</pose>
+        <collision name="coll_inr">
+          <geometry><box><size>2.0 0.1 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_inr">
+          <geometry><box><size>2.0 0.1 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <!-- 南墙 -->
+      <link name="inner_south">
+        <pose>0 -2.55 1.0 0 0 0</pose>
+        <collision name="coll_is">
+          <geometry><box><size>5.0 0.1 2.0</size></box></geometry>
+        </collision>
+        <visual name="vis_is">
+          <geometry><box><size>5.0 0.1 2.0</size></box></geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
+
