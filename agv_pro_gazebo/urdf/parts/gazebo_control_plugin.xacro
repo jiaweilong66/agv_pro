@@ -2,24 +2,30 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:macro name="gazebo_control_plugin">
     <gazebo>
-      <!-- 使用全向控制插件 -->
+      <!-- \u4f7f\u7528\u5168\u5411\u63a7\u5236\u63d2\u4ef6 -->
       <plugin filename="libgazebo_ros_planar_move.so" name="mecanum_drive_controller">
         <ros>
           <remapping>cmd_vel:=/cmd_vel</remapping>
           <remapping>odom:=/odom</remapping>
         </ros>
 
-        <!-- 配置全向控制 -->
-        <frontLeftJoint>left_front_wheel_joint</frontLeftJoint>    <!-- 前左轮 -->
-        <frontRightJoint>right_front_wheel_joint</frontRightJoint>  <!-- 前右轮 -->
-        <rearLeftJoint>left_rear_wheel_joint</rearLeftJoint>        <!-- 后左轮 -->
-        <rearRightJoint>right_rear_wheel_joint</rearRightJoint>     <!-- 后右轮 -->
+        <!-- \u914d\u7f6e\u5168\u5411\u63a7\u5236 -->
+        <frontLeftJoint>left_front_wheel_joint</frontLeftJoint>    <!-- \u524d\u5de6\u8f6e -->
+        <frontRightJoint>right_front_wheel_joint</frontRightJoint>  <!-- \u524d\u53f3\u8f6e -->
+        <rearLeftJoint>left_rear_wheel_joint</rearLeftJoint>        <!-- \u540e\u5de6\u8f6e -->
+        <rearRightJoint>right_rear_wheel_joint</rearRightJoint>     <!-- \u540e\u53f3\u8f6e -->
 
-        <topicName>cmd_vel</topicName>  <!-- 控制命令话题 -->
-        <odometryFrame>odom</odometryFrame>  <!-- 里程计坐标系 -->
-        <odometryTopic>odom</odometryTopic>  <!-- 里程计话题 -->
-        <robotBaseFrame>base_footprint</robotBaseFrame>  <!-- 机器人基础坐标系 -->
-        <publishOdomTF>true</publishOdomTF>  <!-- 发布里程计变换 -->
+        <topicName>cmd_vel</topicName>  <!-- \u63a7\u5236\u547d\u4ee4\u8bdd\u9898 -->
+        <publish_rate>100.0</publish_rate>        
+        <update_rate>100.0</update_rate>          
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>true</publish_odom_tf>
+        <odometryFrame>odom</odometryFrame>  <!-- \u91cc\u7a0b\u8ba1\u5750\u6807\u7cfb -->
+        <odometryTopic>odom</odometryTopic>  <!-- \u91cc\u7a0b\u8ba1\u8bdd\u9898 -->
+        <robotBaseFrame>base_footprint</robotBaseFrame>  <!-- \u673a\u5668\u4eba\u57fa\u7840\u5750\u6807\u7cfb -->
+        <publishOdomTF>true</publishOdomTF>  <!-- \u53d1\u5e03\u91cc\u7a0b\u8ba1\u53d8\u6362 -->
+        <linear_multiplier>7.0</linear_multiplier>
+        <angular_multiplier>6.0</angular_multiplier>
       </plugin>
     </gazebo>
   </xacro:macro>
