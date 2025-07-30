@@ -63,4 +63,6 @@ colcon build
 
 ```
 ros2 launch agv_pro_gazebo agv_pro_gazebo.launch.py
+
+ros2 launch agv_pro_gazebo agv_pro_gazeborun.launch.py
 ```
