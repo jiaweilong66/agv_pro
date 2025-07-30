@@ -25,7 +25,7 @@
         <robotBaseFrame>base_footprint</robotBaseFrame>  <!-- 机器人基础坐标系 -->
         <publishOdomTF>true</publishOdomTF>  <!-- 发布里程计变换 -->
         <linear_multiplier>7.0</linear_multiplier>
-        <angular_multiplier>6.0</angular_multiplier>
+        <angular_multiplier>6.08</angular_multiplier>
       </plugin>
     </gazebo>
   </xacro:macro>
