@@ -15,6 +15,7 @@ def generate_launch_description():
     xacro_file  = os.path.join(pkg_dir, 'urdf', 'agv_pro.xacro')
     world_file  = os.path.join(pkg_dir, 'worlds','run.world')
     rviz_config = os.path.join(pkg_dir, 'rviz',  'agvpro_display.rviz')
+    nav2_params = os.path.join(pkg_dir, 'config','nav2_params.yaml')
     ctrl_yaml   = os.path.join(pkg_dir, 'config','agv_controller.yaml')  # 你的 controller yaml
 
     # 1) 声明 Launch 参数
@@ -22,6 +23,17 @@ def generate_launch_description():
         'use_sim_time', default_value='true',
         description='Use simulation time'
     )
+    declare_map = DeclareLaunchArgument(
+        'map',
+        default_value=os.path.join(pkg_dir, 'map', 'run_map.yaml'),
+        description='Full path to map YAML file'
+    )
+    declare_params = DeclareLaunchArgument(
+        'params_file',
+        default_value=nav2_params,
+        description='Full path to Nav2 params file'
+    )
+
     # 2) 生成 robot_description 参数
     robot_description_content = ParameterValue(
         Command(['xacro ', xacro_file]), value_type=str
@@ -61,15 +73,43 @@ def generate_launch_description():
         output='screen'
     )
 
+    # 6) RViz 可视化
+    rviz = Node(
+        package='rviz2', executable='rviz2', name='rviz2',
+        arguments=['-d', rviz_config],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        output='screen'
+    )
     # 7) 静态 transform map -> odom
     static_tf = Node(
         package='tf2_ros', executable='static_transform_publisher',
         arguments=['0','0','0','0','0','0','map','odom'],
         output='screen'
     )
+
+    # 8) 延迟启动 Nav2 bringup
+    nav2_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('nav2_bringup'),
+                'launch', 'bringup_launch.py'
+            )
+        ),
+        launch_arguments={
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+            'map':           LaunchConfiguration('map'),
+            'params_file':   LaunchConfiguration('params_file'),
+            'autostart':     'true',
+            'rviz':          'false'
+        }.items()
+    )
+    delayed_nav2 = TimerAction(period=8.0, actions=[nav2_launch])
+
     return LaunchDescription([
         # —— 参数声明 —— 
         declare_use_sim,
+        declare_map,
+        declare_params,
 
         # —— Gazebo + 机器人 —— 
         gazebo,
@@ -78,5 +118,9 @@ def generate_launch_description():
         # —— TF & State Publisher —— 
         state_pub,
         joint_pub,
-    ])
+        # —— RViz 可视化 —— 
+        rviz,
 
+        # —— 延迟启动 Nav2 —— 
+        delayed_nav2,
+    ])
